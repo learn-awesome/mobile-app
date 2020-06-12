@@ -45,6 +45,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // Case 1: App is already running in background:
     // Listen to lifecycle changes to subsequently call Java MethodHandler to check for shared data
     SystemChannels.lifecycle.setMessageHandler((msg) {
+
+      // print("Got message $msg");
+
       if (msg.contains('resumed')) {
         _getSharedData().then((d) {
           if (d.isEmpty) return;
@@ -72,23 +75,20 @@ class _MyHomePageState extends State<MyHomePage> {
     } on PlatformException catch (e) {
       sharedData = "Failed to getSharedData: '${e.message}'.";
     }
-
-    setState(() {
-      _url = sharedData;
-    });
+    return sharedData;
   }
 
   _launchURL() async {
     print("launch start");
     String url = _url;
-    var is_valid_url = url != null && (url.startsWith("http:") || url.startsWith("https:"));
-    String la_url = "https://learnawesome.org/items/search?app=true&ext=true&commit=Search+or+Add&q=${Uri.encodeComponent(url)}";
+    var isValidUrl = url != null && (url.startsWith("http:") || url.startsWith("https:"));
+    String laUrl = "https://learnawesome.org/items/search?app=true&ext=true&commit=Search+or+Add&q=${Uri.encodeComponent(url)}";
 
-    if (is_valid_url && await canLaunch(la_url)) {
-      print("launching ${la_url}");
-      await launch(la_url);
+    if (isValidUrl && await canLaunch(laUrl)) {
+      print("launching $laUrl");
+      await launch(laUrl);
     } else {
-      throw 'Could not launch $la_url';
+      throw 'Could not launch $laUrl';
     }
   }
 
