@@ -1,10 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import './models/dataset.dart';
 import './routes/experts.dart';
 import './routes/topics_list.dart';
 import './routes/idea_sets_list.dart';
+
+var dataset;
+
+Future<String> loadJson() async {
+    return await rootBundle.loadString('assets/dataset.json');
+}
 
 void main() {
   runApp(MyApp());
@@ -22,9 +28,9 @@ class MyApp extends StatelessWidget {
       ),
       home: Navigate(),
       routes: {
-        "topic_list": (context) => TopicList(),
-        "idea_sets_list": (context) => IdeaSetsList(),
-        "experts": (context) => Experts()
+        "topic_list": (context) => TopicList(dataset: dataset,),
+        "idea_sets_list": (context) => IdeaSetsList(dataset: dataset,),
+        "experts": (context) => Experts(dataset: dataset,)
       },
     );
   }
@@ -36,6 +42,18 @@ class Navigate extends StatefulWidget {
 }
 
 class _NavigateState extends State<Navigate> {
+  void decodeJson() async {
+    String jsonString = await loadJson();
+    final jsonResponse = json.decode(jsonString);
+    setState((){
+      dataset = jsonResponse;
+    });
+    print(dataset['topics'][0]['name']);
+  }
+  @override
+  void initState() {
+    decodeJson();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +63,7 @@ class _NavigateState extends State<Navigate> {
         ),
       ),
       body: Center(
-        child: Column(
+        child: dataset == null ? CircularProgressIndicator() : Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
             FlatButton(
