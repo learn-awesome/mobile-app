@@ -1,7 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import './models/dataset.dart';
+import './routes/experts.dart';
+import './routes/topics_list.dart';
+import './routes/idea_sets_list.dart';
 
 void main() {
   runApp(MyApp());
@@ -17,105 +20,173 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.purple,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'LearnAwesome QuickSearch'),
+      home: Navigate(),
+      routes: {
+        "topic_list": (context) => TopicList(),
+        "idea_sets_list": (context) => IdeaSetsList(),
+        "experts": (context) => Experts()
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
+class Navigate extends StatefulWidget {
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  _NavigateState createState() => _NavigateState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  static const platform = const MethodChannel('org.learnawesome.app/shared.data');
-  String _url = 'https://flutter.dev';
-
-  @override
-  void initState() {
-    super.initState();
-    _init();
-  }
-
-  _init() async {
-    // Case 1: App is already running in background:
-    // Listen to lifecycle changes to subsequently call Java MethodHandler to check for shared data
-    SystemChannels.lifecycle.setMessageHandler((msg) {
-
-      // print("Got message $msg");
-
-      if (msg.contains('resumed')) {
-        _getSharedData().then((d) {
-          if (d.isEmpty) return;
-          // Your logic here
-          // E.g. at this place you might want to use Navigator to launch a new page and pass the shared data
-          setState(() => _url = d);
-        });
-      }
-    });
-
-    // Case 2: App is started by the intent:
-    // Call Java MethodHandler on application start up to check for shared data
-    var data = await _getSharedData();
-    setState(() => _url = data);
-
-    // You can use sharedData in your build() method now
-  }
-
-
-  Future<String> _getSharedData() async {
-    String sharedData;
-    try {
-      final String result = await platform.invokeMethod('getSharedData');
-      sharedData = result;
-    } on PlatformException catch (e) {
-      sharedData = "Failed to getSharedData: '${e.message}'.";
-    }
-    return sharedData;
-  }
-
-  _launchURL() async {
-    print("launch start");
-    String url = _url;
-    var isValidUrl = url != null && (url.startsWith("http:") || url.startsWith("https:"));
-    String laUrl = "https://learnawesome.org/items/search?app=true&ext=true&commit=Search+or+Add&q=${Uri.encodeComponent(url)}";
-
-    if (isValidUrl && await canLaunch(laUrl)) {
-      print("launching $laUrl");
-      await launch(laUrl);
-    } else {
-      throw 'Could not launch $laUrl';
-    }
-  }
-
+class _NavigateState extends State<Navigate> {
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(
+            'LearnAwesome QuickSearch',
+        ),
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Text(
-              '$_url'
+            FlatButton(
+              onPressed: (){
+                Navigator.pushNamed(context, 'topic_list');
+              },
+              color: Colors.purple,
+              child: Text(
+                'Topics',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            RaisedButton(
-              onPressed: _launchURL,
-              child: Text('Look up or add in LearnAwesome'),
-            )
+            FlatButton(
+              onPressed: (){
+                Navigator.pushNamed(context, 'idea_sets_list');
+              },
+              color: Colors.purple,
+              child: Text(
+                'Idea Sets',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            FlatButton(
+              onPressed: (){
+                Navigator.pushNamed(context, 'experts');
+              },
+              color: Colors.purple,
+              child: Text(
+                'Experts',
+                style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.w600
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
         ),
       ),
-
     );
   }
 }
+
+
+//class MyHomePage extends StatefulWidget {
+//  MyHomePage({Key key, this.title}) : super(key: key);
+//
+//  final String title;
+//
+//  @override
+//  _MyHomePageState createState() => _MyHomePageState();
+//}
+//class _MyHomePageState extends State<MyHomePage> {
+//  static const platform = const MethodChannel('org.learnawesome.app/shared.data');
+//  String _url = 'https://flutter.dev';
+//  @override
+//  void initState() {
+//    super.initState();
+//    _init();
+//  }
+//  _init() async {
+//    // Case 1: App is already running in background:
+//    // Listen to lifecycle changes to subsequently call Java MethodHandler to check for shared data
+//    SystemChannels.lifecycle.setMessageHandler((msg) {
+//
+//      // print("Got message $msg");
+//
+//      if (msg.contains('resumed')) {
+//        _getSharedData().then((d) {
+//          if (d.isEmpty) return;
+//          // Your logic here
+//          // E.g. at this place you might want to use Navigator to launch a new page and pass the shared data
+//          setState(() => _url = d);
+//        });
+//      }
+//    });
+//
+//    // Case 2: App is started by the intent:
+//    // Call Java MethodHandler on application start up to check for shared data
+//    var data = await _getSharedData();
+//    setState(() => _url = data);
+//
+//    // You can use sharedData in your build() method now
+//  }
+//  Future<String> _getSharedData() async {
+//    String sharedData;
+//    try {
+//      final String result = await platform.invokeMethod('getSharedData');
+//      sharedData = result;
+//    } on PlatformException catch (e) {
+//      sharedData = "Failed to getSharedData: '${e.message}'.";
+//    }
+//    return sharedData;
+//  }
+//  _launchURL() async {
+//    print("launch start");
+//    String url = _url;
+//    var isValidUrl = url != null && (url.startsWith("http:") || url.startsWith("https:"));
+//    String laUrl = "https://learnawesome.org/items/search?app=true&ext=true&commit=Search+or+Add&q=${Uri.encodeComponent(url)}";
+//
+//    if (isValidUrl && await canLaunch(laUrl)) {
+//      print("launching $laUrl");
+//      await launch(laUrl);
+//    } else {
+//      throw 'Could not launch $laUrl';
+//    }
+//  }
+//  @override
+//  Widget build(BuildContext context) {
+//    return Scaffold(
+//      appBar: AppBar(
+//        // Here we take the value from the MyHomePage object that was created by
+//        // the App.build method, and use it to set our appbar title.
+//        title: Text(widget.title),
+//      ),
+//      body: Center(
+//        child: Column(
+//          mainAxisAlignment: MainAxisAlignment.center,
+//          children: <Widget>[
+//            Text(
+//              '$_url'
+//            ),
+//            RaisedButton(
+//              onPressed: _launchURL,
+//              child: Text('Look up or add in LearnAwesome'),
+//            )
+//          ],
+//        ),
+//      ),
+//
+//    );
+//  }
+//}

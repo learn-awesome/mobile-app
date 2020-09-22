@@ -1,6 +1,6 @@
-# app
+# mobile_app
 
-Humanity's universal learning map
+A new Flutter application.
 
 ## Getting Started
 
