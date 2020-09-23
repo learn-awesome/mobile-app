@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import './routes/experts.dart';
 import './routes/topics_list.dart';
-import './routes/idea_sets_list.dart';
+import 'routes/item_types_list.dart';
 
 var dataset;
 
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       home: Navigate(),
       routes: {
         "topic_list": (context) => TopicList(dataset: dataset,),
-        "idea_sets_list": (context) => IdeaSetsList(dataset: dataset,),
+        "item_types_list": (context) => ItemTypesList(dataset: dataset,),
         "experts": (context) => Experts(dataset: dataset,)
       },
     );
@@ -83,11 +83,11 @@ class _NavigateState extends State<Navigate> {
             ),
             FlatButton(
               onPressed: (){
-                Navigator.pushNamed(context, 'idea_sets_list');
+                Navigator.pushNamed(context, 'item_types_list');
               },
               color: Colors.purple,
               child: Text(
-                'Idea Sets',
+                'Item Types',
                 style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,

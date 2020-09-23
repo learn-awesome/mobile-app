@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import '../models/ideaSetList.dart';
 
 
-class IdeaSetsList extends StatefulWidget {
+class ItemTypesList extends StatefulWidget {
   dynamic dataset;
-  IdeaSetsList({@required this.dataset});
+  ItemTypesList({@required this.dataset});
   @override
-  _IdeaSetsListState createState() => _IdeaSetsListState();
+  _ItemTypesListState createState() => _ItemTypesListState();
 }
 
-class _IdeaSetsListState extends State<IdeaSetsList> {
+class _ItemTypesListState extends State<ItemTypesList> {
 
   IdeaSetList ideaSetList = IdeaSetList();
   void getIdeaSets(){
