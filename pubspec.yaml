@@ -31,6 +31,7 @@ dependencies:
   json_model: ^0.0.2
   build_runner: ^1.5.2
   json_serializable: ^2.0.0
+  scroll_to_index: ^1.0.6
 
 dev_dependencies:
   flutter_test:
