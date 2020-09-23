@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import './routes/experts.dart';
-import './routes/topics_list.dart';
+import 'routes/experts.dart';
+import 'routes/topics_list.dart';
 import 'routes/item_types_list.dart';
 
 var dataset;
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
       home: Navigate(),
       routes: {
         "topic_list": (context) => TopicList(dataset: dataset,),
-        "item_types_list": (context) => ItemTypesList(dataset: dataset,),
+        "item_types_list": (context) => ItemTypesList(),
         "experts": (context) => Experts(dataset: dataset,)
       },
     );
