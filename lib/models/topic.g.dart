@@ -12,7 +12,10 @@ Topic _$TopicFromJson(Map<String, dynamic> json) {
     ..name = json['name'] as String
     ..search_index = json['search_index'] as String
     ..display_name = json['display_name'] as String
-    ..to_param = json['to_param'] as String;
+    ..to_param = json['to_param'] as String
+    ..parent = json['parent'] == null
+        ? null
+        : Topic_parent.fromJson(json['parent'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$TopicToJson(Topic instance) => <String, dynamic>{
@@ -20,5 +23,6 @@ Map<String, dynamic> _$TopicToJson(Topic instance) => <String, dynamic>{
       'name': instance.name,
       'search_index': instance.search_index,
       'display_name': instance.display_name,
-      'to_param': instance.to_param
+      'to_param': instance.to_param,
+      'parent': instance.parent
     };

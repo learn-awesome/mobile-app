@@ -1,57 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_app/routes/subtopics.dart';
 import '../models/topicsList.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
-
-class TopicList extends StatefulWidget {
-  dynamic dataset;
-  TopicList({@required this.dataset});
+class SubTopicList extends StatefulWidget {
+  String parent;
+  TopicsList topics;
+  SubTopicList({@required this.parent , @required this.topics});
   @override
-  _TopicListState createState() => _TopicListState();
+  _SubTopicListState createState() => _SubTopicListState();
 }
 
-class _TopicListState extends State<TopicList> {
-  
+class _SubTopicListState extends State<SubTopicList> {
+
   String searchQuery;
   AutoScrollController controller;
   final scrollDirection = Axis.vertical;
-  
-  TopicsList topics = TopicsList();
-  var parentSet = <String>{};
-  List<String> parentList = [];
-  void getTopics(){
-    setState(() {
-      topics = TopicsList.fromJson(widget.dataset['topics']);
-    });
-  }
 
-  void getParents(){
-    for (int i = 0 ; i < topics.topics.length ; ++i){
-      if(topics.topics[i].parent == null){
-        parentSet.add("Other Topics");
+  List<String> subtopics = [];
+
+  void getSubtopics(String parent){
+    for (int i = 0 ; i < widget.topics.topics.length ; ++i){
+      if (parent == "Other Topics"){
+        if (widget.topics.topics[i].parent == null){
+          subtopics.add(widget.topics.topics[i].name);
+        } 
+        else {
+          continue;
+        }
       }
       else {
-        parentSet.add("${topics.topics[i].parent.name}");
+        if (widget.topics.topics[i].parent != null){
+          if (widget.topics.topics[i].parent.name == parent){
+            subtopics.add(widget.topics.topics[i].name);
+          }
+          else {
+            continue;
+          }
+        }
       }
     }
-    parentList = parentSet.toList();
-    print(parentList);
-  }
-
-  @override
-  void initState() {
-    getTopics();
-    super.initState();
-    controller = AutoScrollController(
-      viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
-      axis: scrollDirection
-    );
-    getParents();
   }
 
   void searchTopic(String query){
-    int index = parentList.indexWhere((parent) => parent == query);
+    int index = subtopics.indexWhere((subtopic) => subtopic == query);
     _scrollToIndex(index);
   }
 
@@ -59,6 +50,16 @@ class _TopicListState extends State<TopicList> {
     await controller.scrollToIndex(index,
         preferPosition: AutoScrollPosition.begin);
     controller.highlight(index);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    controller = AutoScrollController(
+      viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+      axis: scrollDirection
+    );
+    getSubtopics(widget.parent);
   }
 
   createAlertDialog(BuildContext context){
@@ -118,7 +119,7 @@ class _TopicListState extends State<TopicList> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Topics'),
+        title: Text(widget.parent),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.search , color: Colors.white,),
@@ -131,35 +132,24 @@ class _TopicListState extends State<TopicList> {
       body: ListView.builder(
         controller: controller,
         scrollDirection: scrollDirection,
-        itemCount: (parentList.length == 0) ? 0 : parentList.length,  
+        itemCount: (subtopics.length == 0) ? 0 : subtopics.length,
         itemBuilder: (context , index){
           return Card(
-                  child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: getTile(index),
-                ),
+              child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: getTile(index),
+            ),
           );
         },
-      ),
+      )
     );
   }
-  Widget getTile(int index){
+   Widget getTile(int index){
   return _wrapScrollTag(
     index: index,
-    child: GestureDetector(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SubTopicList(parent: parentList[index] , topics: topics,)));
-            },
-            child: ListTile(
-              title: Text(
-                parentList[index],
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-        ),
-    ),
+    child: ListTile(
+      title: Text(subtopics[index])
+      ),
     );
   }
   Widget _wrapScrollTag({int index, Widget child}) => AutoScrollTag(
@@ -170,4 +160,3 @@ class _TopicListState extends State<TopicList> {
     highlightColor: Colors.purple.withOpacity(0.1),
   );
 }
-
