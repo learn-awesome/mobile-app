@@ -7,3 +7,4 @@ export 'link.dart' ;
 export 'topic.dart' ; 
 export 'topicsList.dart' ; 
 export 'topic_id.dart' ; 
+export 'topic_parent.dart' ; 
