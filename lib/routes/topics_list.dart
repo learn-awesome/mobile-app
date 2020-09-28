@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/models/index.dart';
 import 'package:mobile_app/routes/subtopics.dart';
 import '../models/topicsList.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 
 class TopicList extends StatefulWidget {
-  dynamic dataset;
-  TopicList({@required this.dataset});
+  dynamic topic_dataset;
+  TopicList({@required this.topic_dataset});
   @override
   _TopicListState createState() => _TopicListState();
 }
 
 class _TopicListState extends State<TopicList> {
-  
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   String searchQuery;
   AutoScrollController controller;
   final scrollDirection = Axis.vertical;
@@ -22,21 +23,31 @@ class _TopicListState extends State<TopicList> {
   List<String> parentList = [];
   void getTopics(){
     setState(() {
-      topics = TopicsList.fromJson(widget.dataset['topics']);
+      topics = TopicsList.fromJson(widget.topic_dataset['topics']);
     });
   }
 
   void getParents(){
     for (int i = 0 ; i < topics.topics.length ; ++i){
-      if(topics.topics[i].parent == null){
+      if(topics.topics[i].children.length == 0){
         parentSet.add("Other Topics");
       }
       else {
-        parentSet.add("${topics.topics[i].parent.name}");
+        parentSet.add("${topics.topics[i].name}");
       }
     }
     parentList = parentSet.toList();
     print(parentList);
+  }
+
+  List<Topic> getOtherTopics(){
+    List<Topic> otherTopics = [];
+    for (int i = 0 ; i < topics.topics.length ; ++i){
+      if(topics.topics[i].children.length == 0){
+        otherTopics.add(topics.topics[i]);
+      }
+    }
+    return otherTopics;
   }
 
   @override
@@ -52,7 +63,13 @@ class _TopicListState extends State<TopicList> {
 
   void searchTopic(String query){
     int index = parentList.indexWhere((parent) => parent == query);
-    _scrollToIndex(index);
+    if (index != -1){
+      _scrollToIndex(index);
+    }
+    else {
+      final snackbar = SnackBar(content: Text('Not found'),);
+      _scaffoldKey.currentState.showSnackBar(snackbar);
+    }
   }
 
   Future _scrollToIndex(int index) async {
@@ -117,6 +134,7 @@ class _TopicListState extends State<TopicList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Topics'),
         actions: <Widget>[
@@ -147,18 +165,23 @@ class _TopicListState extends State<TopicList> {
   return _wrapScrollTag(
     index: index,
     child: GestureDetector(
-            onTap: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => SubTopicList(parent: parentList[index] , topics: topics,)));
-            },
-            child: ListTile(
-              title: Text(
-                parentList[index],
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+          onTap: (){
+            if (index == 0){
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SubTopicList(parent: parentList[index] , children: getOtherTopics())));  
+            }
+            else {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SubTopicList(parent: parentList[index] , children: topics.topics[topics.topics.indexWhere((topic) => topic.name == parentList[index])].children,)));
+            }
+          },
+          child: ListTile(
+          title: Text(
+            parentList[index],
+            style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+          ),
         ),
+          ),
     ),
     );
   }

@@ -4,11 +4,9 @@ part 'expertsList.g.dart';
 
 @JsonSerializable()
 class ExpertsList {
-    
-    List<Expert> experts;
-    
-    ExpertsList({this.experts});
 
+    List<Expert> experts;
+    ExpertsList({this.experts});
     factory ExpertsList.fromJson(List<dynamic> json) {
     return ExpertsList(
       experts: json

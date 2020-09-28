@@ -1,49 +1,55 @@
 import 'package:flutter/material.dart';
-import '../models/topicsList.dart';
+import '../models/topic.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
 class SubTopicList extends StatefulWidget {
   String parent;
-  TopicsList topics;
-  SubTopicList({@required this.parent , @required this.topics});
+  List<Topic> children;
+  SubTopicList({@required this.parent , @required this.children});
   @override
   _SubTopicListState createState() => _SubTopicListState();
 }
 
 class _SubTopicListState extends State<SubTopicList> {
-
+  final _scaffoldKey = GlobalKey<ScaffoldState>(); 
   String searchQuery;
   AutoScrollController controller;
   final scrollDirection = Axis.vertical;
 
-  List<String> subtopics = [];
+  //List<String> subtopics = [];
 
-  void getSubtopics(String parent){
-    for (int i = 0 ; i < widget.topics.topics.length ; ++i){
-      if (parent == "Other Topics"){
-        if (widget.topics.topics[i].parent == null){
-          subtopics.add(widget.topics.topics[i].name);
-        } 
-        else {
-          continue;
-        }
-      }
-      else {
-        if (widget.topics.topics[i].parent != null){
-          if (widget.topics.topics[i].parent.name == parent){
-            subtopics.add(widget.topics.topics[i].name);
-          }
-          else {
-            continue;
-          }
-        }
-      }
-    }
-  }
+  // void getSubtopics(String parent){
+  //   for (int i = 0 ; i < widget.topics.topics.length ; ++i){
+  //     if (parent == "Other Topics"){
+  //       if (widget.topics.topics[i].parent == null){
+  //         subtopics.add(widget.topics.topics[i].name);
+  //       } 
+  //       else {
+  //         continue;
+  //       }
+  //     }
+  //     else {
+  //       if (widget.topics.topics[i].parent != null){
+  //         if (widget.topics.topics[i].parent.name == parent){
+  //           subtopics.add(widget.topics.topics[i].name);
+  //         }
+  //         else {
+  //           continue;
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
 
   void searchTopic(String query){
-    int index = subtopics.indexWhere((subtopic) => subtopic == query);
-    _scrollToIndex(index);
+    int index = widget.children.indexWhere((subtopic) => subtopic.name == query);
+    if (index != -1){
+      _scrollToIndex(index);
+    }
+    else {
+      final snackbar = SnackBar(content: Text('Not found'),);
+      _scaffoldKey.currentState.showSnackBar(snackbar);
+    }
   }
 
   Future _scrollToIndex(int index) async {
@@ -59,7 +65,7 @@ class _SubTopicListState extends State<SubTopicList> {
       viewportBoundaryGetter: () => Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
       axis: scrollDirection
     );
-    getSubtopics(widget.parent);
+    //getSubtopics(widget.parent);
   }
 
   createAlertDialog(BuildContext context){
@@ -114,10 +120,10 @@ class _SubTopicListState extends State<SubTopicList> {
       }
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(widget.parent),
         actions: <Widget>[
@@ -132,7 +138,7 @@ class _SubTopicListState extends State<SubTopicList> {
       body: ListView.builder(
         controller: controller,
         scrollDirection: scrollDirection,
-        itemCount: (subtopics.length == 0) ? 0 : subtopics.length,
+        itemCount: (widget.children.length == 0) ? 0 : widget.children.length,
         itemBuilder: (context , index){
           return Card(
               child: Padding(
@@ -147,9 +153,21 @@ class _SubTopicListState extends State<SubTopicList> {
    Widget getTile(int index){
   return _wrapScrollTag(
     index: index,
-    child: ListTile(
-      title: Text(subtopics[index])
-      ),
+    child: GestureDetector(
+          onTap: (){
+            var children = widget.children[widget.children.indexWhere((topic) => topic.display_name == widget.children[index].display_name)].children;
+            if(children.length == 0){
+               final snackbar = SnackBar(content: Text('No Subtopics'),);
+              _scaffoldKey.currentState.showSnackBar(snackbar);
+            }
+            else {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => SubTopicList(parent: widget.children[index].display_name , children: children,)));
+            }
+          },
+          child: ListTile(
+          title: Text(widget.children[index].display_name)
+        ),
+    ),
     );
   }
   Widget _wrapScrollTag({int index, Widget child}) => AutoScrollTag(

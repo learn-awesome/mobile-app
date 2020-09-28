@@ -9,7 +9,7 @@ class ItemTypesList extends StatefulWidget {
 }
 
 class _ItemTypesListState extends State<ItemTypesList> {
-
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
   String searchQuery;
   final scrollDirection = Axis.vertical;
   AutoScrollController controller;
@@ -59,8 +59,13 @@ class _ItemTypesListState extends State<ItemTypesList> {
 
   void searchTopic(String query){
     int index = item_types.indexWhere((type) => type == query);
-    _scrollToIndex(index);
-    print(index);
+    if (index != -1){
+      _scrollToIndex(index);
+    }
+    else {
+      final snackbar = SnackBar(content: Text('Not found'),);
+      _scaffoldKey.currentState.showSnackBar(snackbar);
+    }
   }
 
   createAlertDialog(BuildContext context){
@@ -119,6 +124,7 @@ class _ItemTypesListState extends State<ItemTypesList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text('Item Types'),
         actions: <Widget>[
