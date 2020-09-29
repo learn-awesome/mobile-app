@@ -9,7 +9,7 @@ import 'routes/item_types_list.dart';
 var dataset;
 
 Future<String> loadJson() async {
-    return await rootBundle.loadString('assets/dataset.json');
+    return await rootBundle.loadString('assets/topic_tree.json');
 }
 
 void main() {
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
       ),
       home: Navigate(),
       routes: {
-        "topic_list": (context) => TopicList(dataset: dataset,),
+        "topic_list": (context) => TopicList(topic_dataset: dataset,),
         "item_types_list": (context) => ItemTypesList(),
         "experts": (context) => Experts(dataset: dataset,)
       },

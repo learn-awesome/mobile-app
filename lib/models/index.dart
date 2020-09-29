@@ -1,10 +1,6 @@
 export 'expert.dart' ; 
-export 'expertsList.dart' ; 
-export 'ideaSetList.dart' ; 
-export 'idea_set.dart' ; 
+export 'expertsList.dart' ;  
 export 'item.dart' ; 
 export 'link.dart' ; 
 export 'topic.dart' ; 
 export 'topicsList.dart' ; 
-export 'topic_id.dart' ; 
-export 'topic_parent.dart' ; 
