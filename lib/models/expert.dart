@@ -15,6 +15,7 @@ class Expert {
     String kind;
     String second_kind;
     String to_param;
+    String twitter;
     
     factory Expert.fromJson(Map<String,dynamic> json) => _$ExpertFromJson(json);
     Map<String, dynamic> toJson() => _$ExpertToJson(this);

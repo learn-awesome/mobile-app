@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app/routes/expert_details.dart';
 import '../models/expertsList.dart';
 import 'package:scroll_to_index/scroll_to_index.dart';
 
@@ -135,10 +136,23 @@ class _ExpertsState extends State<Experts> {
   Widget getTile(int index){
   return _wrapScrollTag(
     index: index,
-    child: ListTile(
-            title: Text(experts.experts[index].name),
-            subtitle: Text('Description: ${experts.experts[index].description}'),
-          ),
+    child: GestureDetector(
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => ExpertDetails(expert: experts.experts[index],)));
+          },
+          child: Column(
+          children: [
+            CircleAvatar(
+              backgroundColor: Colors.white,
+              backgroundImage: NetworkImage(experts.experts[index].image_url == null ? 'https://learnawesome.org/stream/assets/img/logo-mobile.png' : experts.experts[index].image_url)
+            ),
+            ListTile(
+                  title: Text(experts.experts[index].name),
+                  //subtitle: Text('Description: ${experts.experts[index].description}'),
+                ),
+        ],
+      ),
+    ),
     );
   }
   Widget _wrapScrollTag({int index, Widget child}) => AutoScrollTag(
