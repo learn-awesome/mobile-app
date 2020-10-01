@@ -16,7 +16,8 @@ Expert _$ExpertFromJson(Map<String, dynamic> json) {
     ..image_url = json['image_url'] as String
     ..kind = json['kind'] as String
     ..second_kind = json['second_kind'] as String
-    ..to_param = json['to_param'] as String;
+    ..to_param = json['to_param'] as String
+    ..twitter = json['twitter'] as String;
 }
 
 Map<String, dynamic> _$ExpertToJson(Expert instance) => <String, dynamic>{
